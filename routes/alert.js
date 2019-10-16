@@ -34,8 +34,8 @@ router.get("/", function(req, res, next) {
   res.send("message posted");
 });
 
-router.get("/cicak", function(req, res, next) {
-  res.send("respond with a cicak");
+router.get("/new", function(req, res, next) {
+  res.render("alert/new");
 });
 
 module.exports = router;
