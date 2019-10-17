@@ -1,17 +1,27 @@
 var express = require("express");
 var router = express.Router();
-// const { slack_bot_token, slack_signing_secret, port } = require("../config");
 const { WebClient } = require("@slack/web-api");
-const { slack_token } = require("../config");
-/* GET users listing. */
-router.get("/", function(req, res, next) {
-  // res.send("respond with an alert");
-  //--------
 
+//INDEX - show all alerts
+router.get("/", function(req, res) {
+  // Get all campgrounds from DB
+  // Campground.find({}, function(err, allCampgrounds){
+  //    if(err){
+  //        console.log(err);
+  //    } else {
+  //       res.render("campgrounds/index",{campgrounds:allCampgrounds});
+  //    }
+  // });
+  res.render("alert/index");
+});
+
+//CREATE - add new campground to DB
+router.post("/", function(req, res) {
   console.log("Getting started with Node Slack SDK");
 
   // Create a new instance of the WebClient class with the token read from your environment variable
-  const web = new WebClient(slack_token);
+  const web = new WebClient(process.env.SLACK_TOKEN);
+  console.log(process.env.SLACK_TOKEN);
   // The current date
   const currentTime = new Date().toTimeString();
 
@@ -28,10 +38,10 @@ router.get("/", function(req, res, next) {
       text: `The current time is ${currentTime}`
     });
 
-    console.log("Message posted!");
+    console.log(process.env.SLACK_TOKEN);
   })();
   //--------
-  res.send("message posted");
+  res.redirect("/alert");
 });
 
 router.get("/new", function(req, res, next) {
