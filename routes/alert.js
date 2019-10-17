@@ -1,6 +1,8 @@
 var express = require("express");
 var router = express.Router();
-const { WebClient } = require("@slack/web-api");
+// const { WebClient } = require("@slack/web-api");
+const axios = require("axios");
+const accessToken = process.env.SLACK_TOKEN;
 
 //INDEX - show all alerts
 router.get("/", function(req, res) {
@@ -17,30 +19,32 @@ router.get("/", function(req, res) {
 
 //CREATE - add new campground to DB
 router.post("/", function(req, res) {
-  console.log("Getting started with Node Slack SDK");
-
-  // Create a new instance of the WebClient class with the token read from your environment variable
-  const web = new WebClient(process.env.SLACK_TOKEN);
-  console.log(process.env.SLACK_TOKEN);
-  // The current date
-  const currentTime = new Date().toTimeString();
-
-  (async () => {
-    // Use the `auth.test` method to find information about the installing user
-    const res = await web.auth.test();
-
-    // Find your user id to know where to send messages to
-    const userId = res.user_id;
-
-    // Use the `chat.postMessage` method to send a message from this app
-    await web.chat.postMessage({
-      channel: userId,
-      text: `The current time is ${currentTime}`
-    });
-
-    console.log(process.env.SLACK_TOKEN);
-  })();
-  //--------
+  const fname = req.body.fname;
+  const contact = req.body.contact;
+  const channel = req.body.channel;
+  const msg = req.body.message;
+  // var desc = req.body.description;
+  async function postMessage(messageText, channel) {
+    const url = "https://slack.com/api/chat.postMessage";
+    const post = {
+      channel: channel,
+      text: messageText
+    };
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`
+    };
+    try {
+      const response = await axios.post(url, post, { headers: headers });
+      console.log(` Response code: ${response.status}`);
+    } catch (e) {
+      console.log(`Error posting message: ${e}`);
+    }
+  }
+  postMessage(
+    `Hello ${fname} @ ${channel}, contact me at ${contact}. p/s: ${msg}`,
+    channel
+  );
   res.redirect("/alert");
 });
 
